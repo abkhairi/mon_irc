@@ -3,8 +3,34 @@
 #include <sys/socket.h> // Needed for socket creating and binding
 #include <netinet/in.h> // Needed to use struct sockaddr_in
 #include <fcntl.h> // for fcntl() function for non-blocking socket
+#include <vector> // fpr vector
+#include <poll.h> // for strcut pollfd
 
-int parsing_port_and_pass(std::string port, std::string pass)
+class serverr
+{
+    private:
+        int _fd_sock_serv;
+        int _port;
+        std::string _pass;
+        std::vector<struct pollfd> vec_pollfd;
+        serverr();
+    public:
+        serverr(int port, std::string pass);
+        ~serverr();
+        void    initializer_server(int port, std::string pass);
+        int     parsing_port_and_pass(std::string port, std::string pass);
+};
+
+serverr::~serverr()
+{}
+
+serverr::serverr(int port, std::string pass)
+{
+    _port = port;
+    _pass = pass;
+}
+
+int serverr::parsing_port_and_pass(std::string port, std::string pass)
 {
     if (port.empty())
         return 1;
@@ -23,13 +49,12 @@ int parsing_port_and_pass(std::string port, std::string pass)
     return port_int;
 }
 
-void    initializer_server(int  port, std::string pass)
+void    serverr::initializer_server(int  port, std::string pass)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     int opt = 1;// setsockopt : function in network programming is used to configure options on a socket.
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    
     fcntl(sockfd, F_SETFL, O_NONBLOCK);
 
     struct sockaddr_in serverAddr;
@@ -44,9 +69,12 @@ void    initializer_server(int  port, std::string pass)
     std::cout << "\033[32m+ Port\033[0m     = " << port << "\033[32m                +\033[0m"<< std::endl;
     std::cout << "\033[32m+ Password\033[0m = " << pass << "\033[32m                  +\033[0m"<<std::endl;
     std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl;
+
+    struct pollfd mon_pollfd;
+    mon_pollfd.fd = 
     while(true)
     {
-        int res = poll();
+        // int res = poll();
     }
 }
 
@@ -71,7 +99,7 @@ int main(int ac, char** av)
         std::cout << "Error password" << std::endl;
         return 1;
     }
-    initializer_server(port_int, pass);
-
+    serverr mon_server(port_int, pass);
+    mon_server.initializer_server(port_int, pass);
     return 0;
 }

@@ -43,3 +43,9 @@ int fcntl(int fd, int cmd, ... /* arg */ );
 
 
 التأثير: من بعد ما تدير هاد التغيير، أي عملية ديال القراءة أو الكتابة على السوكيت غادي ترجع فورا بدل ما تستنا وما غاديش تبلوك
+
+poll()  :
+    the poll function in C is used to monitor multiple file descriptors to check 
+if they are ready for input/output operations (e.g., reading, writing). The code you provided:
+
+int ret = poll(fds, nfds, -1);
