@@ -2,6 +2,7 @@
 #include <string>
 #include <sys/socket.h> // Needed for socket creating and binding
 #include <netinet/in.h> // Needed to use struct sockaddr_in
+#include <fcntl.h> // for fcntl() function for non-blocking socket
 
 int parsing_port_and_pass(std::string port, std::string pass)
 {
@@ -29,6 +30,8 @@ void    initializer_server(int  port, std::string pass)
     int opt = 1;// setsockopt : function in network programming is used to configure options on a socket.
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     
+    fcntl(sockfd, F_SETFL, O_NONBLOCK);
+
     struct sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
@@ -36,7 +39,15 @@ void    initializer_server(int  port, std::string pass)
 
     bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)); // bound [ip and port] to server socket
     listen(sockfd, 10);
-    // while(true);
+    std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl <<"\033[32m+\033[0m";
+    std::cout << "\033[31m server listen in :             " <<"\033[32m+" << std::endl;
+    std::cout << "\033[32m+ Port\033[0m     = " << port << "\033[32m                +\033[0m"<< std::endl;
+    std::cout << "\033[32m+ Password\033[0m = " << pass << "\033[32m                  +\033[0m"<<std::endl;
+    std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl;
+    while(true)
+    {
+        int res = poll();
+    }
 }
 
 int main(int ac, char** av)
