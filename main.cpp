@@ -5,6 +5,7 @@
 #include <fcntl.h> // for fcntl() function for non-blocking socket
 #include <vector> // fpr vector
 #include <poll.h> // for strcut pollfd
+#include <arpa/inet.h>  // For inet_ntoa()
 
 class serverr
 {
@@ -29,8 +30,24 @@ class cliente
 {
     private :
         int client_sock_fd;
+        std::string ip_addr_client;
+        std::vector <cliente> vec_client;
     public :
+        cliente(int _client_sock_fd, std::string _ip_addr_client);
+        void display_client();
 };
+
+void cliente::display_client()
+{
+        std::cout <<"fd the client " << this->client_sock_fd << std::endl;
+        std::cout <<"ip the client " << this->ip_addr_client << std::endl;
+}
+
+cliente::cliente(int _client_sock_fd, std::string _ip_addr_client)
+{
+    client_sock_fd = _client_sock_fd;
+    ip_addr_client = _ip_addr_client;
+}
 
 
 void setNonBlocking(int fd) 
@@ -103,7 +120,7 @@ void    serverr::initializer_server(int  port, std::string pass)
 
     vec_pollfd.push_back(mon_pollfd);
 
-    while(1)
+    while (1)
     {
         int res = poll(vec_pollfd.data(), vec_pollfd.size(), -1);
         if (res == -1)
@@ -117,6 +134,7 @@ void    serverr::initializer_server(int  port, std::string pass)
             {
                 if (vec_pollfd[i].fd == get_fd_sock_serv())
                 {
+                    // is a server here : is a handle new connction for client 
                     struct sockaddr_in client_addr;
                     socklen_t len = sizeof(client_addr);
                     int client_fd = accept(get_fd_sock_serv(), (struct sockaddr*)&client_addr, &len);
@@ -124,17 +142,21 @@ void    serverr::initializer_server(int  port, std::string pass)
 
                     struct pollfd mon_pollfd2;
                         mon_pollfd2.fd = client_fd;
-                        mon_pollfd2.events = POLLIN;
+                        mon_pollfd2.events = POLLIN | POLLOUT;
                         mon_pollfd2.revents = 0;
+                
                     vec_pollfd.push_back(mon_pollfd2);
+
+                    std::string ip_address_client = inet_ntoa(client_addr.sin_addr);
+                    cliente obj_client(client_fd, ip_address_client);
+                    obj_client.display_client();
                     std::cout << "New connection accepted: " << client_fd << std::endl;
-                    // is a server here : is a handle new connction for client 
                 }
                 else
                 {
                     // is a client here : is a handle new msg 
                 }
-                display();
+                // display();
             }
         }
         // break;

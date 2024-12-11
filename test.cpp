@@ -49,17 +49,17 @@ private:
         std::cout << "New connection accepted: " << client_fd << std::endl;
     }
 
-    void handleClientMessage(int client_fd) {
+    void handleClientMessage(int client_fd) 
+    {
         char buffer[BUFFER_SIZE];
         int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
 
-        if (bytes_received <= 0) {
-            if (bytes_received == 0) {
+        if (bytes_received <= 0)
+        {
+            if (bytes_received == 0) 
                 std::cout << "Client disconnected: " << client_fd << std::endl;
-            } else {
+            else
                 perror("recv");
-            }
-
             close(client_fd);
             removeClient(client_fd);
             return;
@@ -70,26 +70,32 @@ private:
         std::cout << "Message from client " << client_fd << ": " << message;
 
         // Handle authentication, nicknames, and commands here
-        if (clients[client_fd].empty()) {
-            if (message.substr(0, 9) == "PASS ") {
-                if (message.substr(5) == password + "\r\n") {
+        if (clients[client_fd].empty()) 
+        {
+            if (message.substr(0, 9) == "PASS ") 
+            {
+                if (message.substr(5) == password + "\r\n") 
                     send(client_fd, "+OK\n", 4, 0);
-                } else {
+                else 
+                {
                     send(client_fd, "-ERR Incorrect password\n", 24, 0);
                     close(client_fd);
                     removeClient(client_fd);
                 }
-            } else {
+            } 
+            else
                 send(client_fd, "-ERR You must authenticate first\n", 32, 0);
-            }
         }
 
         // Further command parsing goes here
     }
 
-    void removeClient(int client_fd) {
-        for (std::vector<pollfd>::iterator it = poll_fds.begin(); it != poll_fds.end(); ++it) {
-            if (it->fd == client_fd) {
+    void removeClient(int client_fd) 
+    {
+        for (std::vector<pollfd>::iterator it = poll_fds.begin(); it != poll_fds.end(); ++it) 
+        {
+            if (it->fd == client_fd) 
+            {
                 poll_fds.erase(it);
                 break;
             }
