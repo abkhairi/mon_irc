@@ -9,8 +9,8 @@
 class serverr
 {
     private:
-        int _fd_sock_serv;
-        int _port;
+        int         _fd_sock_serv;
+        int         _port;
         std::string _pass;
         serverr();
     public:
@@ -20,7 +20,16 @@ class serverr
         void    initializer_server(int port, std::string pass);
         int     get_fd_sock_serv() { return _fd_sock_serv; }
         void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
+        void    display();
         // int     parsing_port_and_pass(std::string port, std::string pass);
+};
+
+
+class cliente
+{
+    private :
+        int client_sock_fd;
+    public :
 };
 
 serverr::~serverr()
@@ -69,18 +78,46 @@ void    serverr::initializer_server(int  port, std::string pass)
     std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl <<"\033[32m+\033[0m";
     std::cout << "\033[31m server listen in :             " <<"\033[32m+" << std::endl;
     std::cout << "\033[32m+ Port\033[0m     = " << port << "\033[32m                +\033[0m"<< std::endl;
-    std::cout << "\033[32m+ Password\033[0m = " << pass << "\033[32m                  +\033[0m"<<std::endl;
+    std::cout << "\033[32m+ Password\033[0m = " << pass << "\033[32m                 +\033[0m"<<std::endl;
     std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl;
 
     set_fd_sock_serv(sockfd);
     struct pollfd mon_pollfd;
+
     mon_pollfd.fd = get_fd_sock_serv();
     mon_pollfd.events = POLLIN;
+
     vec_pollfd.push_back(mon_pollfd);
-    // while(true)
-    // {
-    //     // int res = poll();
-    // }
+
+    while(true)
+    {
+        int res = poll(vec_pollfd.data(), vec_pollfd.size(), -1);
+        if (res == -1)
+        {
+            std::cout << "error poll\n";
+            return ;
+        }
+        for (size_t i = 0; vec_pollfd.size() > i; i++)
+        {
+            if (POLLIN & vec_pollfd[i].revents)
+            {
+                if (vec_pollfd[i].fd == get_fd_sock_serv())
+                {
+                    struct sockaddr_in client_addr;
+                    socklen_t len = sizeof(client_addr);
+                    int sock_clinet = accept(get_fd_sock_serv(), (struct sockaddr*)&client_addr, &len);
+                    // is a server here : is a handle new connction for client 
+                }
+                else
+                {
+                    // is a client here : is a handle new msg 
+                }
+            }
+            else
+                std::cout << "ana hna \n";
+        }
+        break;
+    }
 }
 
 int main(int ac, char** av)
@@ -106,7 +143,12 @@ int main(int ac, char** av)
     }
     serverr mon_server(port_int, pass);
     mon_server.initializer_server(port_int, pass);
-    std::vector<struct pollfd>::iterator it = mon_server.vec_pollfd.begin();
-    std::cout << "fd = " << it->fd << std::endl;
+    mon_server.display();
     return 0;
+}
+
+void    serverr::display()
+{
+    for (std::vector<struct pollfd>::iterator it = vec_pollfd.begin(); it != vec_pollfd.end(); it++)
+        std::cout << "fd = " << it->fd << std::endl;
 }
