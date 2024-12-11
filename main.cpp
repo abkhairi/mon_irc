@@ -12,13 +12,15 @@ class serverr
         int _fd_sock_serv;
         int _port;
         std::string _pass;
-        std::vector<struct pollfd> vec_pollfd;
         serverr();
     public:
+        std::vector<struct pollfd> vec_pollfd;
         serverr(int port, std::string pass);
         ~serverr();
         void    initializer_server(int port, std::string pass);
-        int     parsing_port_and_pass(std::string port, std::string pass);
+        int     get_fd_sock_serv() { return _fd_sock_serv; }
+        void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
+        // int     parsing_port_and_pass(std::string port, std::string pass);
 };
 
 serverr::~serverr()
@@ -30,7 +32,7 @@ serverr::serverr(int port, std::string pass)
     _pass = pass;
 }
 
-int serverr::parsing_port_and_pass(std::string port, std::string pass)
+int parsing_port_and_pass(std::string port, std::string pass)
 {
     if (port.empty())
         return 1;
@@ -70,12 +72,15 @@ void    serverr::initializer_server(int  port, std::string pass)
     std::cout << "\033[32m+ Password\033[0m = " << pass << "\033[32m                  +\033[0m"<<std::endl;
     std::cout << "\033[32m++++++++++++++++++++++++++++++++++\033[0m" << std::endl;
 
+    set_fd_sock_serv(sockfd);
     struct pollfd mon_pollfd;
-    mon_pollfd.fd = 
-    while(true)
-    {
-        // int res = poll();
-    }
+    mon_pollfd.fd = get_fd_sock_serv();
+    mon_pollfd.events = POLLIN;
+    vec_pollfd.push_back(mon_pollfd);
+    // while(true)
+    // {
+    //     // int res = poll();
+    // }
 }
 
 int main(int ac, char** av)
@@ -101,5 +106,7 @@ int main(int ac, char** av)
     }
     serverr mon_server(port_int, pass);
     mon_server.initializer_server(port_int, pass);
+    std::vector<struct pollfd>::iterator it = mon_server.vec_pollfd.begin();
+    std::cout << "fd = " << it->fd << std::endl;
     return 0;
 }
