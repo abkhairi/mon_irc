@@ -39,8 +39,10 @@ private:
         socklen_t client_len = sizeof(client_addr);
         int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
 
-        // setNonBlocking(client_fd);
+        setNonBlocking(client_fd);
+
         pollfd pfd = {client_fd, POLLIN, 0};
+        
         poll_fds.push_back(pfd);
         clients[client_fd] = ""; // Placeholder for the nickname
 

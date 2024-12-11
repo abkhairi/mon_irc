@@ -32,6 +32,20 @@ class cliente
     public :
 };
 
+
+void setNonBlocking(int fd) 
+{
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1) {
+        perror("fcntl");
+        exit(EXIT_FAILURE);
+    }
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        perror("fcntl");
+        exit(EXIT_FAILURE);
+    }
+}
+
 serverr::~serverr()
 {}
 
@@ -89,7 +103,7 @@ void    serverr::initializer_server(int  port, std::string pass)
 
     vec_pollfd.push_back(mon_pollfd);
 
-    while(true)
+    while(1)
     {
         int res = poll(vec_pollfd.data(), vec_pollfd.size(), -1);
         if (res == -1)
@@ -105,18 +119,25 @@ void    serverr::initializer_server(int  port, std::string pass)
                 {
                     struct sockaddr_in client_addr;
                     socklen_t len = sizeof(client_addr);
-                    int sock_clinet = accept(get_fd_sock_serv(), (struct sockaddr*)&client_addr, &len);
+                    int client_fd = accept(get_fd_sock_serv(), (struct sockaddr*)&client_addr, &len);
+                    setNonBlocking(client_fd);
+
+                    struct pollfd mon_pollfd2;
+                        mon_pollfd2.fd = client_fd;
+                        mon_pollfd2.events = POLLIN;
+                        mon_pollfd2.revents = 0;
+                    vec_pollfd.push_back(mon_pollfd2);
+                    std::cout << "New connection accepted: " << client_fd << std::endl;
                     // is a server here : is a handle new connction for client 
                 }
                 else
                 {
                     // is a client here : is a handle new msg 
                 }
+                display();
             }
-            else
-                std::cout << "ana hna \n";
         }
-        break;
+        // break;
     }
 }
 
@@ -143,12 +164,16 @@ int main(int ac, char** av)
     }
     serverr mon_server(port_int, pass);
     mon_server.initializer_server(port_int, pass);
-    mon_server.display();
+    // mon_server.display();
     return 0;
 }
 
 void    serverr::display()
 {
     for (std::vector<struct pollfd>::iterator it = vec_pollfd.begin(); it != vec_pollfd.end(); it++)
-        std::cout << "fd = " << it->fd << std::endl;
+    {
+        std::cout << "fd the struct  = " << it->fd << std::endl;
+        std::cout << "event the struct  = " << it->events << std::endl;
+        std::cout << "revent the struct  = " << it->revents << std::endl;
+    }
 }
