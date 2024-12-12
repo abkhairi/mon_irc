@@ -49,3 +49,10 @@ poll()  : Using poll() (or equivalent) to handle multiple connections.
 if they are ready for input/output operations (e.g., reading, writing). The code you provided:
 
 int ret = poll(fds, nfds, -1);
+
+
+
+The recv() :
+    function in socket programming is used to receive data from a connected socket. It allows the server or client to read incoming messages sent by the other end of the connection
+
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);

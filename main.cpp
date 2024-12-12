@@ -6,6 +6,18 @@
 #include <vector> // fpr vector
 #include <poll.h> // for strcut pollfd
 #include <arpa/inet.h>  // For inet_ntoa()
+#include <unistd.h> // for close() function
+
+class cliente
+{
+    private :
+        int client_sock_fd;
+        std::string ip_addr_client;
+        // std::string nickname;
+    public :
+        cliente(int _client_sock_fd, std::string _ip_addr_client);
+        void display_client();
+};
 
 class serverr
 {
@@ -13,6 +25,7 @@ class serverr
         int         _fd_sock_serv;
         int         _port;
         std::string _pass;
+        std::vector <cliente> vec_client;
         serverr();
     public:
         std::vector<struct pollfd> vec_pollfd;
@@ -22,20 +35,9 @@ class serverr
         int     get_fd_sock_serv() { return _fd_sock_serv; }
         void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
         void    display();
-        // int     parsing_port_and_pass(std::string port, std::string pass);
 };
 
 
-class cliente
-{
-    private :
-        int client_sock_fd;
-        std::string ip_addr_client;
-        std::vector <cliente> vec_client;
-    public :
-        cliente(int _client_sock_fd, std::string _ip_addr_client);
-        void display_client();
-};
 
 void cliente::display_client()
 {
@@ -48,7 +50,6 @@ cliente::cliente(int _client_sock_fd, std::string _ip_addr_client)
     client_sock_fd = _client_sock_fd;
     ip_addr_client = _ip_addr_client;
 }
-
 
 void setNonBlocking(int fd) 
 {
@@ -91,6 +92,24 @@ int parsing_port_and_pass(std::string port, std::string pass)
     return port_int;
 }
 
+std::string receive_cmd(int fd_client)
+{
+    char buffer[1024];
+    int bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received <= 0)
+    {
+        if (bytes_received == 0)
+            std::cout << "Client disconnected: " << fd_client << std::endl;
+        else
+            perror("recv");
+        close(fd_client);
+        // removeClient(fd_client);
+        return "";
+    }
+    buffer[bytes_received] = '\0';
+    std::string message(buffer);
+    return message;
+}
 void    serverr::initializer_server(int  port, std::string pass)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -144,17 +163,20 @@ void    serverr::initializer_server(int  port, std::string pass)
                         mon_pollfd2.fd = client_fd;
                         mon_pollfd2.events = POLLIN | POLLOUT;
                         mon_pollfd2.revents = 0;
-                
+
                     vec_pollfd.push_back(mon_pollfd2);
 
                     std::string ip_address_client = inet_ntoa(client_addr.sin_addr);
                     cliente obj_client(client_fd, ip_address_client);
-                    obj_client.display_client();
+                    vec_client.push_back(obj_client);
                     std::cout << "New connection accepted: " << client_fd << std::endl;
                 }
                 else
                 {
-                    // is a client here : is a handle new msg 
+                    // is a client here : is a handle new msg
+                    int socket_client = vec_pollfd[i].fd;
+                    std::string cmd = receive_cmd(socket_client);
+                    std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
                 }
                 // display();
             }
@@ -162,6 +184,7 @@ void    serverr::initializer_server(int  port, std::string pass)
         // break;
     }
 }
+
 
 int main(int ac, char** av)
 {
