@@ -128,15 +128,30 @@ void    authenticate_client(std::string cmd,int socket_client)
     if (i == 2)
     {
         // here manipilier les commandes
+        if (vec_of_cmd_authen[0] == "pass")
+        {
+            std::cout << "is a pass here" << std::endl;
+            
+        }
+        else if (vec_of_cmd_authen[0] == "nick")
+        {
+            std::cout << "is a nick here" << std::endl;
+        }
+        else if (vec_of_cmd_authen[0] == "user")
+        {
+            std::cout << "is a user here" << std::endl;
+        }
+        else
+            return ;
     }
     else
         return ;
 }
 
-    // for(std::vector<std::string>::iterator it = vec_of_cmd_authen.begin(); it != vec_of_cmd_authen.end(); it++)
-    // {
-    //     std::cout << "hado homa cmd = " << *it << std::endl;
-    // }
+// for(std::vector<std::string>::iterator it = vec_of_cmd_authen.begin(); it != vec_of_cmd_authen.end(); it++)
+// {
+//     std::cout << "hado homa cmd = " << *it << std::endl;
+// }
 
 void    serverr::initializer_server(int  port, std::string pass)
 {
