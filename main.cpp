@@ -97,6 +97,7 @@ int parsing_port_and_pass(std::string port, std::string pass)
 std::string receive_cmd(int fd_client)
 {
     char buffer[1024];
+    memset(buffer, 0, 1024);
     int bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0)
     {
@@ -131,7 +132,7 @@ void    authenticate_client(std::string cmd,int socket_client)
         if (vec_of_cmd_authen[0] == "pass")
         {
             std::cout << "is a pass here" << std::endl;
-            
+
         }
         else if (vec_of_cmd_authen[0] == "nick")
         {
