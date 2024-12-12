@@ -177,11 +177,11 @@ void    serverr::initializer_server(int  port, std::string pass)
                     int socket_client = vec_pollfd[i].fd;
                     std::string cmd = receive_cmd(socket_client);
                     std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
+                    // authenticate_client();
+                    // handler_commande(cmd);
                 }
-                // display();
             }
         }
-        // break;
     }
 }
 
