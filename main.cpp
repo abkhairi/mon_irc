@@ -9,17 +9,28 @@
 #include <unistd.h> // for close() function
 #include <cctype> // for isdigit() function and tolower() function
 #include <sstream> // for std::stringstream
+#include <cstring> // for std::strstr
 
 class cliente
 {
     private :
         int client_sock_fd;
         std::string ip_addr_client;
+        std::string recvdata;
         // std::string nickname;
     public :
         cliente(int _client_sock_fd, std::string _ip_addr_client);
         void display_client();
+        void set_recv_data(std::string b);
+        int get_client_fd();
+        std::string get_recvline();
+
 };
+
+std::string cliente::get_recvline()
+{
+    return recvdata;
+}
 
 class serverr
 {
@@ -36,11 +47,14 @@ class serverr
         void    initializer_server(int port, std::string pass);
         int     get_fd_sock_serv() { return _fd_sock_serv; }
         void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
+        cliente& get_client_orgien(int socket_client);
         void    display();
 };
 
-
-
+void cliente::set_recv_data(std::string b)
+{
+    recvdata = b;
+}
 void cliente::display_client()
 {
         std::cout <<"fd the client " << this->client_sock_fd << std::endl;
@@ -94,11 +108,26 @@ int parsing_port_and_pass(std::string port, std::string pass)
     return port_int;
 }
 
+int cliente::get_client_fd()
+{
+    return (client_sock_fd);
+}
+
+cliente& serverr::get_client_orgien(int socket_client)
+{
+    for (size_t i = 0; vec_client.size() > i; i++)
+    {
+        if (vec_client[i].get_client_fd() == socket_client)
+            return (vec_client[i]);
+    }
+    return vec_client[0];
+}
+
 std::string receive_cmd(int fd_client)
 {
     char buffer[1024];
     memset(buffer, 0, 1024);
-    int bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
+    ssize_t bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0)
     {
         if (bytes_received == 0)
@@ -114,7 +143,7 @@ std::string receive_cmd(int fd_client)
     return message;
 }
 
-void    authenticate_client(std::string cmd,int socket_client)
+void    authenticate_client(std::string cmd,int socket_client, cliente &clienteref)
 {
     for (size_t i = 0; i < cmd.size(); i++)
         cmd[i] = std::tolower(cmd[i]);
@@ -128,22 +157,28 @@ void    authenticate_client(std::string cmd,int socket_client)
     }
     if (i == 2)
     {
-        // here manipilier les commandes
-        if (vec_of_cmd_authen[0] == "pass")
+        std::cout << "here\n";
+        if (strstr(clienteref.get_recvline().c_str(), "\n"))
         {
-            std::cout << "is a pass here" << std::endl;
-
+            size_t position = clienteref.get_recvline().find_first_of("\n");
+            std::cout << "position = " << position << std::endl;
+            std::string cmd_final = clienteref.get_recvline().substr(0 , position + 1);
+            std::cout << "commande final => " << cmd_final << std::endl;
         }
-        else if (vec_of_cmd_authen[0] == "nick")
-        {
-            std::cout << "is a nick here" << std::endl;
-        }
-        else if (vec_of_cmd_authen[0] == "user")
-        {
-            std::cout << "is a user here" << std::endl;
-        }
-        else
-            return ;
+        // if (vec_of_cmd_authen[0] == "pass")
+        // {
+        //     std::cout << "is a pass here" << std::endl;
+        // }
+        // else if (vec_of_cmd_authen[0] == "nick")
+        // {
+        //     std::cout << "is a nick here" << std::endl;
+        // }
+        // else if (vec_of_cmd_authen[0] == "user")
+        // {
+        //     std::cout << "is a user here" << std::endl;
+        // }
+        // else
+        //     return ;
     }
     else
         return ;
@@ -153,6 +188,7 @@ void    authenticate_client(std::string cmd,int socket_client)
 // {
 //     std::cout << "hado homa cmd = " << *it << std::endl;
 // }
+
 
 void    serverr::initializer_server(int  port, std::string pass)
 {
@@ -221,7 +257,10 @@ void    serverr::initializer_server(int  port, std::string pass)
                     int socket_client = vec_pollfd[i].fd;
                     std::string cmd = receive_cmd(socket_client);
                     std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
-                    authenticate_client(cmd, socket_client);
+                    cliente &client_ref = get_client_orgien(socket_client);
+                    client_ref.set_recv_data(cmd);
+                    authenticate_client(cmd, socket_client, client_ref);
+                    
                     // handler_commande(cmd);
                 }
             }
