@@ -7,6 +7,8 @@
 #include <poll.h> // for strcut pollfd
 #include <arpa/inet.h>  // For inet_ntoa()
 #include <unistd.h> // for close() function
+#include <cctype> // for isdigit() function and tolower() function
+#include <sstream> // for std::stringstream
 
 class cliente
 {
@@ -102,14 +104,38 @@ std::string receive_cmd(int fd_client)
             std::cout << "Client disconnected: " << fd_client << std::endl;
         else
             perror("recv");
-        close(fd_client);
+        close(fd_client); // close the socket if not present program infinite loop infoi click sur c
         // removeClient(fd_client);
         return "";
     }
-    buffer[bytes_received] = '\0';
+    buffer[bytes_received] = '\0'; // add null terminator if not present => display garbej value
     std::string message(buffer);
     return message;
 }
+
+void    authenticate_client(std::string cmd,int socket_client)
+{
+    for (size_t i = 0; i < cmd.size(); i++)
+        cmd[i] = std::tolower(cmd[i]);
+    std::stringstream ss(cmd);
+    int i = 0;
+    std::vector<std::string> vec_of_cmd_authen;
+    while (ss >> cmd)
+    {
+        vec_of_cmd_authen.push_back(cmd);
+        i++;
+    }
+    for(std::vector<std::string>::iterator it = vec_of_cmd_authen.begin(); it != vec_of_cmd_authen.end(); it++)
+    {
+        std::cout << "hado homa cmd = " << *it << std::endl;
+    }
+    if (i != 2)
+    {
+        std::cout << "invalide arugument the commande" << std::endl;
+        return ;
+    }
+}
+
 void    serverr::initializer_server(int  port, std::string pass)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -177,7 +203,7 @@ void    serverr::initializer_server(int  port, std::string pass)
                     int socket_client = vec_pollfd[i].fd;
                     std::string cmd = receive_cmd(socket_client);
                     std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
-                    // authenticate_client();
+                    authenticate_client(cmd, socket_client);
                     // handler_commande(cmd);
                 }
             }
