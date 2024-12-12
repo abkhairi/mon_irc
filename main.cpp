@@ -125,16 +125,18 @@ void    authenticate_client(std::string cmd,int socket_client)
         vec_of_cmd_authen.push_back(cmd);
         i++;
     }
-    for(std::vector<std::string>::iterator it = vec_of_cmd_authen.begin(); it != vec_of_cmd_authen.end(); it++)
+    if (i == 2)
     {
-        std::cout << "hado homa cmd = " << *it << std::endl;
+        // here manipilier les commandes
     }
-    if (i != 2)
-    {
-        std::cout << "invalide arugument the commande" << std::endl;
+    else
         return ;
-    }
 }
+
+    // for(std::vector<std::string>::iterator it = vec_of_cmd_authen.begin(); it != vec_of_cmd_authen.end(); it++)
+    // {
+    //     std::cout << "hado homa cmd = " << *it << std::endl;
+    // }
 
 void    serverr::initializer_server(int  port, std::string pass)
 {
