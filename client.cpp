@@ -23,8 +23,11 @@ cliente::cliente(int _client_sock_fd, std::string _ip_addr_client)
     ip_addr_client  = _ip_addr_client;
     authenti        = false;
     _nickname       = "";
-    _pass           = "";
+    _pass_client    = "";
     _user           = "";
+    _flag_pass      = false;
+    _flag_nick      = false;
+    _flag_user      = false;
 }
 
 int cliente::get_client_fd()
@@ -37,7 +40,7 @@ std::string cliente::get_nickname(){
 }
 
 std::string cliente::get_password(){
-    return (_pass);
+    return (_pass_client);
 }
 
 std::string cliente::get_user(){
@@ -47,4 +50,34 @@ std::string cliente::get_user(){
 bool cliente::get_authen()
 {
     return (authenti);
+}
+
+bool        cliente::get_flag_pass()
+{
+    return (_flag_pass);
+}
+bool        cliente::get_flag_nick()
+{
+    return (_flag_nick);
+}
+bool        cliente::get_flag_user()
+{
+    return (_flag_user);
+}
+
+void        cliente::set_flag_pass(bool flag_pass){
+    _flag_pass = flag_pass;
+}
+
+void        cliente::set_flag_nick(bool flag_nick){
+    _flag_pass = flag_nick;
+}
+
+void        cliente::set_flag_user(bool flag_user){
+    _flag_pass = flag_user;
+}
+
+void cliente::set_nickname(std::string nickname)
+{
+    _nickname = nickname;
 }

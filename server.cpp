@@ -31,17 +31,14 @@ void    serverr::authenticate_client(std::string cmd, int socket_client, cliente
         vec_of_cmd.push_back(cmd);
         i++;
     }
-    if (i == 2)
+    if (strstr(clienteref.get_recvline().c_str(), "\n"))
     {
-        if (strstr(clienteref.get_recvline().c_str(), "\n"))
-        {
-            size_t position = clienteref.get_recvline().find_first_of("\n");
-            if (position > clienteref.get_recvline().size())
-                return;
-            // std::cout << "position = " << position << std::endl;
-            std::string cmd_final = clienteref.get_recvline().substr(0 , position + 1);
-            handeler_authen_and_commande(cmd_final, _index_client);
-        }
+        size_t position = clienteref.get_recvline().find_first_of("\n");
+        if (position > clienteref.get_recvline().size())
+            return;
+        // std::cout << "position = " << position << std::endl;
+        std::string cmd_final = clienteref.get_recvline().substr(0 , position + 1);
+        handeler_authen_and_commande(cmd_final, _index_client);
     }
     else
         return ;

@@ -17,27 +17,59 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
     std::vector<std::string> &vec_of_commande = vec_of_cmd;
     std::string host_ip = ft_gethostname();
 
-
     std::cout << "hostname is " << host_ip << std::endl;
-    //check if authenticate or no
-    if (get_client_by_index(_index_client - 1).get_authen() == false)
+    cliente &client_ = get_client_by_index(_index_client - 1);
+
+    if (client_.get_authen() == false)
     {
-        std::cout << "had client awel mara lih hhh\n";
+        // std::cout << "here\n";
         if (vec_of_commande.size() <= 1)
-            send_msg_to_clinet(get_client_by_index(_index_client).get_client_fd(), );
-        // check_authentication();
+        {
+            if (vec_of_commande[0] == "nick")
+                send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 431 :No nickname given\r\n");
+            vec_of_commande.clear();
+            return ;
+        }   
+        if (vec_of_commande[0] == "pass" && vec_of_commande[1] == _pass && vec_of_commande.size() == 2 && client_.get_flag_pass() == false)
+        {
+            std::cout << "is a pass cmd" << std::endl;
+            client_.set_flag_pass(true);
+            vec_of_commande.clear();
+            return ;
+        }
+        else if (vec_of_commande[0] == "pass" && vec_of_commande[1] != _pass && vec_of_commande.size() == 2 && client_.get_flag_pass() == false)
+        {
+            send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 464 :Password incorrect\r\n");
+            vec_of_commande.clear();
+            return ;
+        }
+        if (vec_of_commande[0] == "nick" && vec_of_commande.size() == 2 && client_.get_flag_nick() == false)
+        {
+            // check if any client has the same nickname ft_check_nickname()
+            client_.set_flag_nick(true);
+            client_.set_nickname(vec_of_commande[1]);
+            vec_of_commande.clear();
+            return ;
+        }
+        else if (vec_of_commande[0] == "nick" && vec_of_commande.size() > 2 && client_.get_flag_nick() == false)
+        {
+            send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 432 :Erroneous nickname\r\n");
+            vec_of_commande.clear();
+            return ;
+        }
+        // if ()
     }
     else
     {
         //deja authenticater that client ??????
-        
-        std::cout << "cmd0 = " << vec_of_commande[0] << std::endl;
-        if (vec_of_commande[0] == "pass")
-        {
-            std::cout << "is a pass cmd" << std::endl;
-        }
-        else
-            return ;
+
+        // std::cout << "cmd0 = " << vec_of_commande[0] << std::endl;
+        // if (vec_of_commande[0] == "pass")
+        // {
+        //     std::cout << "is a pass cmd" << std::endl;
+        // }
+        // else
+        //     return ;
     }
 
 }
