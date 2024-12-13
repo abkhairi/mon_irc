@@ -36,8 +36,12 @@ class cliente
         void        set_flag_nick(bool flag_nick);
         void        set_flag_user(bool flag_user);
         void       set_nickname(std::string nickname);
+        void      set_password(std::string pass);
+        void      set_user(std::string user);
 
 };
+
+
 
 
 

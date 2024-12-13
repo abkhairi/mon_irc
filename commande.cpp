@@ -34,6 +34,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
         {
             std::cout << "is a pass cmd" << std::endl;
             client_.set_flag_pass(true);
+            client_.set_password(vec_of_commande[1]);
             vec_of_commande.clear();
             return ;
         }
@@ -57,7 +58,28 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
             vec_of_commande.clear();
             return ;
         }
-        // if ()
+        if (vec_of_commande[0] == "user" && client_.get_flag_user() == false)
+        {
+            if (vec_of_commande.size() != 5)
+            {
+                send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 461 :Need more parameters\r\n");
+                vec_of_commande.clear();
+                return ;
+            }
+            else
+            {
+                client_.set_flag_user(true);
+                client_.set_user(cmd_final);
+                std::cout << "user is " << client_.get_user() << std::endl;
+                vec_of_commande.clear();
+                return ;
+            }
+        }
+        else
+        {
+            vec_of_commande.clear();
+            return ;
+        }
     }
     else
     {

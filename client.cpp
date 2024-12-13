@@ -43,7 +43,8 @@ std::string cliente::get_password(){
     return (_pass_client);
 }
 
-std::string cliente::get_user(){
+std::string cliente::get_user()
+{
     return (_user);
 }
 
@@ -70,14 +71,23 @@ void        cliente::set_flag_pass(bool flag_pass){
 }
 
 void        cliente::set_flag_nick(bool flag_nick){
-    _flag_pass = flag_nick;
+    _flag_nick = flag_nick;
 }
 
 void        cliente::set_flag_user(bool flag_user){
-    _flag_pass = flag_user;
+    _flag_user = flag_user;
 }
 
 void cliente::set_nickname(std::string nickname)
 {
     _nickname = nickname;
+}
+
+void      cliente::set_password(std::string pass)
+{
+    _pass_client = pass;
+}
+void      cliente::set_user(std::string user)
+{
+    _user = user.substr(5, user.size() - 5);
 }
