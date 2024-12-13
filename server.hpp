@@ -23,6 +23,7 @@ class serverr
         int         _fd_sock_serv;
         int         _port;
         std::string _pass;
+        std::string host_ip;
         std::vector <cliente> vec_client;
         serverr();
     public:
@@ -35,6 +36,7 @@ class serverr
         int     get_fd_sock_serv() { return _fd_sock_serv; }
         void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
         cliente& get_client_orgien(int socket_client);
+        cliente& get_client_by_index(size_t index);
         void    authenticate_client(std::string cmd,int socket_client, cliente &clienteref, size_t &_index_client);
         void    display();
         std::string receive_cmd(int fd_client, size_t &_index_client);
@@ -43,5 +45,7 @@ class serverr
 
 int parsing_port_and_pass(std::string port, std::string pass);
 void setNonBlocking(int fd) ;
+
+void send_msg_to_clinet(int fd_client, std::string mon_msg);
 
 #endif

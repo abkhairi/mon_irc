@@ -33,7 +33,6 @@ void    serverr::authenticate_client(std::string cmd, int socket_client, cliente
     }
     if (i == 2)
     {
-        std::cout << "here\n";
         if (strstr(clienteref.get_recvline().c_str(), "\n"))
         {
             size_t position = clienteref.get_recvline().find_first_of("\n");
@@ -155,4 +154,9 @@ void    serverr::display()
         std::cout << "event the struct  = " << it->events << std::endl;
         std::cout << "revent the struct  = " << it->revents << std::endl;
     }
+}
+
+cliente& serverr::get_client_by_index(size_t index)
+{
+    return (vec_client[index]);
 }

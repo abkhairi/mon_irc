@@ -25,6 +25,5 @@ int main(int ac, char** av)
     serverr mon_server(port_int, pass);
     size_t &i = mon_server._index_client;
     mon_server.initializer_server(port_int, pass, i);
-    // mon_server.display();
     return 0;
 }

@@ -31,3 +31,14 @@ int parsing_port_and_pass(std::string port, std::string pass)
         return 2;
     return port_int;
 }
+
+
+void send_msg_to_clinet(int fd_client, std::string mon_msg)
+{
+    if (!mon_msg.empty())
+    {
+        ssize_t bytes = send(fd_client, mon_msg.c_str(), mon_msg.size(), 0);
+        if (bytes == -1)
+            perror("send: ");
+    }
+}
