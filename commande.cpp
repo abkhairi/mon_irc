@@ -30,6 +30,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
     else
     {
         //deja authenticater that client ??????
+        
         std::cout << "cmd0 = " << vec_of_commande[0] << std::endl;
         if (vec_of_commande[0] == "pass")
         {
