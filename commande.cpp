@@ -17,6 +17,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
 
     // std::cout << "hostname is " << host_ip << std::endl;
     cliente &client_ = get_client_by_index(_index_client - 1);
+    std::string nick = client_.get_nickname();
 
     std::cout << "size of vector = " << vec_of_commande.size() << std::endl;
     // ici segfault if nc localhost 4545 after click sur entre hhhhhh
@@ -25,7 +26,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
         if (vec_of_commande.size() <= 1)
         {
             if (vec_of_commande[0] == "nick")
-                send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 431 :No nickname given\r\n");
+                send_msg_to_clinet(client_.get_client_fd(), ERR_NONICKNAMEGIVEN(nick, host_ip));
             else if (vec_of_commande[0] != "nick" || vec_of_commande.size() == 0)
                 send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 461 :Not enough parameters\r\n");
             vec_of_commande.clear();

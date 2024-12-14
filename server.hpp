@@ -14,6 +14,7 @@
 #include <sstream> // for std::stringstream
 #include <cstring> // for std::strstr
 #include "client.hpp"
+#include "reply_msg.hpp"
 
 class cliente;
 
