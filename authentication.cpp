@@ -65,7 +65,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
             vec_of_commande.clear();
             return ;
         }
-        if (vec_of_commande[0] == "user")
+        if (vec_of_commande[0] == "user" && client_.get_flag_nick() && client_.get_flag_pass())
         {
             std::cout << "herre fi user\n";
             if (vec_of_commande.size() > 5 || vec_of_commande[1].empty())
@@ -80,6 +80,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
                 client_.set_user(cmd_final);
                 std::cout << "user is " << client_.get_user() << std::endl;
                 vec_of_commande.clear();
+                client_.set_authen();
                 return ;
             }
         }
@@ -88,15 +89,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
     }
     else
     {
-        //deja authenticater that client ??????
-
-        // std::cout << "cmd0 = " << vec_of_commande[0] << std::endl;
-        // if (vec_of_commande[0] == "pass")
-        // {
-        //     std::cout << "is a pass cmd" << std::endl;
-        // }
-        // else
-        //     return ;
+        ft_commande_j_m(cmd_final, _index_client);
     }
 
 }

@@ -38,6 +38,7 @@ class cliente
         void       set_nickname(std::string nickname);
         void      set_password(std::string pass);
         void      set_user(std::string user);
+        void        set_authen();
 
 };
 

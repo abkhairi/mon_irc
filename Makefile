@@ -4,7 +4,7 @@ CC     = c++
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC    = main.cpp utilis.cpp client.cpp server.cpp commande.cpp
+SRC    = main.cpp utilis.cpp client.cpp server.cpp authentication.cpp ft_handle_cmd.cpp
 OBJ    = $(SRC:.cpp=.o)
 
  

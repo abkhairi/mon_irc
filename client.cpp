@@ -6,6 +6,10 @@ std::string cliente::get_recvline()
     return recvdata;
 }
 
+void cliente::set_authen()
+{
+    authenti = true;
+}
 void cliente::set_recv_data(std::string b)
 {
     recvdata = b;

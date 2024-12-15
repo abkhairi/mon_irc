@@ -42,6 +42,7 @@ class serverr
         void    display();
         std::string receive_cmd(int fd_client, size_t &_index_client);
         void handeler_authen_and_commande(std::string cmd_final,size_t &_index_client);
+        void ft_commande_j_m(std::string cmd_final, size_t &_index_client);
 };
 
 int parsing_port_and_pass(std::string port, std::string pass);

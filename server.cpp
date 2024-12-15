@@ -124,6 +124,7 @@ std::string serverr::receive_cmd(int fd_client, size_t &_index_client)
     char buffer[1024];
     memset(buffer, 0, 1024);
     ssize_t bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
+    std::cout << "byte ===> " << bytes_received << std::endl;
     if (bytes_received <= 0)
     {
         if (bytes_received == 0)
@@ -140,6 +141,8 @@ std::string serverr::receive_cmd(int fd_client, size_t &_index_client)
     }
     buffer[bytes_received] = '\0'; // add null terminator if not present => display garbej value
     std::string message(buffer);
+    if (message == "\n")
+        return "";
     return message;
 }
 
