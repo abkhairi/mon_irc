@@ -39,3 +39,11 @@ void send_msg_to_clinet(int fd_client, std::string mon_msg)
     if (bytes == -1)
         perror("send: ");
 }
+
+
+std::string to_lower(std::string str)
+{
+    for (size_t i =0; str.size() > i; i++)
+        str[i] = tolower(str[i]); 
+    return (str);
+}

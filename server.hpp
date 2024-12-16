@@ -13,6 +13,8 @@
 #include <cctype> // for isdigit() function and tolower() function
 #include <sstream> // for std::stringstream
 #include <cstring> // for std::strstr
+#include <ctime>
+
 #include "client.hpp"
 #include "reply_msg.hpp"
 
@@ -40,14 +42,18 @@ class serverr
         cliente& get_client_by_index(size_t index);
         void    authenticate_client(std::string cmd,int socket_client, cliente &clienteref, size_t &_index_client);
         void    display();
+        void is_registre(cliente &client_, std::string time_);
         std::string receive_cmd(int fd_client, size_t &_index_client);
         void handeler_authen_and_commande(std::string cmd_final,size_t &_index_client);
-        void ft_commande_j_m(std::string cmd_final, size_t &_index_client);
+        void ft_commande_j_m(std::vector<std::string> cmd_final, size_t &_index_client, cliente &client_);
+        // commande 
+        void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client)
+
 };
 
 int parsing_port_and_pass(std::string port, std::string pass);
 void setNonBlocking(int fd) ;
 
 void send_msg_to_clinet(int fd_client, std::string mon_msg);
-
+std::string to_lower(std::string str);
 #endif

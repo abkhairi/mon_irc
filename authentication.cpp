@@ -2,6 +2,17 @@
 #include "client.hpp"
 
 
+
+void serverr::is_registre(cliente &client_, std::string time_)
+{
+    send_msg_to_clinet(client_.get_client_fd(), RPL_WELCOME(client_.get_nickname(), client_.get_ip_addr_client()));
+    send_msg_to_clinet(client_.get_client_fd(), RPL_YOURHOST(client_.get_nickname(), client_.get_ip_addr_client()));
+    send_msg_to_clinet(client_.get_client_fd(), RPL_CREATED(client_.get_nickname(), client_.get_ip_addr_client(), time_));
+    send_msg_to_clinet(client_.get_client_fd(), RPL_MYINFO(client_.get_nickname(), client_.get_ip_addr_client()));
+
+}
+
+
 std::string ft_gethostname()
 {
     char hostname[256]; // Buffer to store the hostname
@@ -19,7 +30,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
     cliente &client_ = get_client_by_index(_index_client - 1);
     std::string nick = client_.get_nickname();
 
-    std::cout << "size of vector = " << vec_of_commande.size() << std::endl;
+    // std::cout << "size of vector = " << vec_of_commande.size() << std::endl;
     // ici segfault if nc localhost 4545 after click sur entre hhhhhh
     if (client_.get_authen() == false)
     {
@@ -36,7 +47,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
         {
             if (vec_of_commande.size() == 2)
             {
-                std::cout << "is a pass cmd" << std::endl;
+                // std::cout << "is a pass cmd" << std::endl;
                 client_.set_flag_pass(true);
                 client_.set_password(vec_of_commande[1]);
             }
@@ -67,7 +78,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
         }
         if (vec_of_commande[0] == "user" && client_.get_flag_nick() && client_.get_flag_pass())
         {
-            std::cout << "herre fi user\n";
+            // std::cout << "herre fi user\n";
             if (vec_of_commande.size() > 5 || vec_of_commande[1].empty())
             {
                 send_msg_to_clinet(client_.get_client_fd(), ":irc.abkhairi.chat 461 :Need more parameters\r\n");
@@ -81,6 +92,9 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
                 std::cout << "user is " << client_.get_user() << std::endl;
                 vec_of_commande.clear();
                 client_.set_authen();
+                time_t currentTime = time(0); // time now non readable for humain
+                std::string time_ = ctime(&currentTime);
+                is_registre(client_, time_);
                 return ;
             }
         }
@@ -89,7 +103,16 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
     }
     else
     {
-        ft_commande_j_m(cmd_final, _index_client);
+        if (vec_of_commande[0] == "pass" || vec_of_commande[0] == "user")
+        {
+            send_msg_to_clinet(client_.get_client_fd(), ERR_ALREADYREGISTERED(nick, host_ip));
+            vec_of_commande.clear();
+            return ;
+        }
+        else
+        {
+            ft_commande_j_m(vec_of_commande, _index_client, client_);
+        }
     }
 
 }

@@ -109,7 +109,7 @@ void    serverr::initializer_server(int  port, std::string pass, size_t &i)
                     // is a client here : is a handle new msg
                     int socket_client = vec_pollfd[i].fd;
                     std::string cmd = receive_cmd(socket_client, i);
-                    std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
+                    // std::cout << "Message from client " << socket_client << ": " << cmd << std::endl;
                     cliente &client_ref = get_client_orgien(socket_client);
                     client_ref.set_recv_data(cmd);
                     authenticate_client(cmd, socket_client, client_ref, i);  
@@ -124,7 +124,6 @@ std::string serverr::receive_cmd(int fd_client, size_t &_index_client)
     char buffer[1024];
     memset(buffer, 0, 1024);
     ssize_t bytes_received = recv(fd_client, buffer, sizeof(buffer) - 1, 0);
-    std::cout << "byte ===> " << bytes_received << std::endl;
     if (bytes_received <= 0)
     {
         if (bytes_received == 0)

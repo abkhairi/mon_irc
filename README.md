@@ -56,3 +56,20 @@ The recv() :
     function in socket programming is used to receive data from a connected socket. It allows the server or client to read incoming messages sent by the other end of the connection
 
 ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+if recv return 0    =>
+if recv return -1   =>
+if recv return >= 1 =>
+
+
+
+reply :
+Numerics in the range from 001 to 099 are used for client-server
+connections only and should never travel between servers.  Replies
+generated in the response to commands are found in the range from 200
+to 399.
+
+Upon successful completion of the registration process, the server MUST send, in this order:
+   - RPL_WELCOME (001),
+   - RPL_YOURHOST (002),
+   - RPL_CREATED (003),
+   - RPL_MYINFO (004),

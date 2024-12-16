@@ -30,6 +30,7 @@ class cliente
         bool        get_flag_pass();
         bool        get_flag_nick();
         bool        get_flag_user();
+        std::string get_ip_addr_client();
         //settter
         void        set_recv_data(std::string b);
         void        set_flag_pass(bool flag_pass);

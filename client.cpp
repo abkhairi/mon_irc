@@ -1,6 +1,13 @@
 #include "client.hpp"
 
 
+
+
+std::string cliente::get_ip_addr_client()
+{
+    return (ip_addr_client);
+}
+
 std::string cliente::get_recvline()
 {
     return recvdata;
