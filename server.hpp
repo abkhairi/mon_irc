@@ -14,11 +14,14 @@
 #include <sstream> // for std::stringstream
 #include <cstring> // for std::strstr
 #include <ctime>
+#include <map>
 
 #include "client.hpp"
 #include "reply_msg.hpp"
+#include "channels.hpp"
 
 class cliente;
+class channels;
 
 class serverr
 {
@@ -32,6 +35,7 @@ class serverr
     public:
         size_t      _index_client;
         std::vector<struct pollfd> vec_pollfd;
+        std::map<std::string, channels> channels_;
         std::vector<std::string> vec_of_cmd;
         serverr(int port, std::string pass);
         ~serverr();
@@ -47,7 +51,7 @@ class serverr
         void handeler_authen_and_commande(std::string cmd_final,size_t &_index_client);
         void ft_commande_j_m(std::vector<std::string> cmd_final, size_t &_index_client, cliente &client_);
         // commande 
-        void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client)
+        void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client);
 
 };
 
