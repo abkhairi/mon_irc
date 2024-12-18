@@ -15,10 +15,12 @@
 #include <cstring> // for std::strstr
 #include <ctime>
 #include <map>
+#include <iomanip> // Nécessaire pour std::setfill et std::setw
 
 #include "client.hpp"
 #include "reply_msg.hpp"
 #include "channels.hpp"
+
 
 class cliente;
 class channels;
@@ -50,6 +52,7 @@ class serverr
         std::string receive_cmd(int fd_client, size_t &_index_client);
         void handeler_authen_and_commande(std::string cmd_final,size_t &_index_client);
         void ft_commande_j_m(std::vector<std::string> cmd_final, size_t &_index_client, cliente &client_);
+        bool is_membre(int fd_client, channels channel_);
         // commande 
         void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client);
 

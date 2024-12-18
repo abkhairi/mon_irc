@@ -113,6 +113,7 @@ void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_
         {
             ft_commande_j_m(vec_of_commande, _index_client, client_);
         }
+        vec_of_commande.clear();
     }
 
 }
