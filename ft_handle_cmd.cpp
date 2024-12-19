@@ -191,9 +191,10 @@ void serverr::ft_commande_j_m(std::vector<std::string> vec_cmd, size_t &_index_c
             else
                 ft_join(vec_cmd, client_, _index_client);
         }
-        if (to_lower(vec_cmd[0] == "kick"))
+        if (to_lower(vec_cmd[0]) == "kick")
         {
             // handler cmd kick
+            std::cout << "commande kick" << std::endl;
         }
     }
     else
