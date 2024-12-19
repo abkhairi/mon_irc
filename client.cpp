@@ -2,11 +2,22 @@
 
 
 
+void    cliente::pushChannel(std::string channel) 
+{
+    channels.push_back(channel);
+}
 
 std::string cliente::get_ip_addr_client()
 {
     return (ip_addr_client);
 }
+
+std::vector<std::string > cliente::get_chan_name()
+{
+    return (channels);
+}
+
+
 
 std::string cliente::get_recvline()
 {

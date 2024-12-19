@@ -10,6 +10,32 @@ channels::channels(std::string name_channel)
     _usersSize = 0;
 }
 
+std::string     channels::gettopicseter() {
+    return topicseter;
+}
+
+std::string     channels::gettopictime() {
+    return topictime;
+}
+
+
+void    channels::setTopicAttr(std::string topic, bool topc, std::string seter, std::string time) {
+    topicseter = seter;
+    topictime = time;
+    _topic = topic;
+    _topc = topc;
+}
+
+
+std::string     channels::getTopic() 
+{
+    return _topic;
+}
+
+void     channels::setTopic(std::string topic) 
+{
+     _topic = topic;
+}
 
 bool	channels::isInvited(int sockfd)
 {

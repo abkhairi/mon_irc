@@ -16,6 +16,7 @@ class cliente
         bool        _flag_pass;
         bool        _flag_nick;
         bool        _flag_user;
+        std::vector<std::string> channels;
     public :
         cliente(int _client_sock_fd, std::string _ip_addr_client);
         void          display_client();
@@ -30,6 +31,7 @@ class cliente
         bool        get_flag_nick();
         bool        get_flag_user();
         std::string get_ip_addr_client();
+        std::vector<std::string > get_chan_name();
         //settter
         void        set_recv_data(std::string b);
         void        set_flag_pass(bool flag_pass);
@@ -39,12 +41,10 @@ class cliente
         void      set_password(std::string pass);
         void      set_user(std::string user);
         void        set_authen();
-
+        //
+        void    pushChannel(std::string channel);
+        // void cliente::print_name_channel(cliente client_);
 };
-
-
-
-
 
 
 #endif

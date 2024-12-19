@@ -33,6 +33,9 @@ class channels
         void set_size_users(size_t size_user);
         void set_name_display(std::string name);
         void set_inv(bool in);
+        void setTopic(std::string topic) ;
+        void  setTopicAttr(std::string topic, bool topc, std::string seter, std::string time);
+
 
         //getter
         bool get_inv();
@@ -44,6 +47,9 @@ class channels
         size_t get_limit();
         std::string get_name_chanel_display();
         std::map<std::pair<bool,int>, cliente >& get_map_user();
+        std::string getTopic();
+        std::string     gettopicseter();
+        std::string     gettopictime();
         //
         bool	isInvited(int sockfd);
 };

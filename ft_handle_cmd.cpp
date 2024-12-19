@@ -1,5 +1,17 @@
 #include "server.hpp"
 
+
+void print_name_channel(cliente client_)
+{
+    std::vector<std::string> channels_name = client_.get_chan_name();
+    std::vector<std::string>::iterator it = channels_name.begin();
+    for (it = channels_name.begin(); it != channels_name.end(); it++)
+    {
+        std::cout << "name of channel qui " << client_.get_nickname() << " to join = "<< *it << std::endl;
+    }
+}
+
+
 std::string get_str_channels(std::vector<std::string> v)
 {
     std::string chan = v[1];
@@ -33,40 +45,6 @@ std::string getListOfNames(std::map<std::pair<bool, int>, cliente> _users)
 }
 
 
-// void printRowChannels(const std::string& channel, const std::string& password)
-// {
-//     const int width = 50;
-//     std::cout << "+-------------------------------------------------+\n";
-//     std::cout << "| " << std::left << std::setw(width - 2) << "CHANNEL : " + channel << "|\n";
-//     std::cout << "| " << std::left << std::setw(width - 2) << "PASSWORD: " + password << "|\n";
-// }
-
-// void printChannelClients(channels &obj)
-// {
-//     std::map<std::pair<bool, int>, cliente> usersMap = obj.get_map_user();
-//     std::map<std::pair<bool, int>, cliente>::iterator it = usersMap.begin();
-//     std::cout << "+-------------------------------------------------+\n";
-//     for (; it != usersMap.end(); ++it)
-//     {
-//         std::cout << "	Nickname: " << it->second.get_nickname() << std::endl;
-//         std::cout << " 	Sock_fd: " << it->second.get_client_fd() << std::endl;
-//         std::cout << "	Authentication: " << it->second.get_authen() << std::endl;
-//         std::cout << "	Operator: " << it->first.first << std::endl;
-//         std::cout << "      ---------------------\n";
-//     }
-// }
-
-// void ShowChannels(std::map<std::string, channels> ChannelsMap)
-// {
-//     std::map<std::string, channels>::iterator it = ChannelsMap.begin();
-//     for (; it != ChannelsMap.end(); ++it)
-//     {
-//         printRowChannels(it->first, it->second.get_password());
-//         printChannelClients(it->second);
-//     }
-// 	std::cout << "+-------------------------------------------------+\n";
-// }
-
 void print_info_user(channels  &obj)
 {
     std::map<std::pair<bool, int>, cliente> user_map = obj.get_map_user();
@@ -93,6 +71,17 @@ void print_channel(std::map<std::string, channels> channels_)
         std::cout << WHITE << "+" << RESET << BLUE << " PASS of channel : "<< RESET << WHITE<< it->second.get_password()<< RESET<< "              +"<< std::endl;
         std::cout << WHITE << "+++++++++++++++++++++++++++++++++++++++" << RESET << std::endl; 
         print_info_user(it->second);
+    }
+}
+
+void    serverr::broadcastMessage(channels _channel, std::string _message, int _clientfd)
+{
+    std::map<std::pair<bool, int>, cliente> mapOfClients = _channel.get_map_user();
+    std::map<std::pair<bool, int>, cliente>::iterator iter;
+    for(iter = mapOfClients.begin(); iter != mapOfClients.end(); iter++)
+    {
+        if (iter->second.get_client_fd() != _clientfd)
+            send_msg_to_clinet(iter->second.get_client_fd(), _message);
     }
 }
 
@@ -165,10 +154,26 @@ void serverr::ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t 
             it->second.set_size_users(1);
             // it->second.removeInvitedClient(clientfd);
             list_operator = getListOfNames(it->second.get_map_user());
+            // send msg to client for entrer to channel
+            send_msg_to_clinet(client_.get_client_fd(), RPL_JOIN(nickname, nickname, it->second.get_name_chanel_display(), host_ip));
+            // send msg all client for any client entrer channel 
+            broadcastMessage(it->second, RPL_JOIN(nickname, nickname,it->second.get_name_chanel_display(), host_ip), client_.get_client_fd());
+            // diaplay list the client in channels par exmple : 353 hicham = #chan1 :idryab hicham @abkhairi
+            send_msg_to_clinet(client_.get_client_fd(), RPL_NAMREPLY(host_ip, list_operator, it->second.get_name_chanel_display(), nickname));
+            //Sent as a reply to the NAMES command, this numeric specifies the end of a list of channel member names.
+            send_msg_to_clinet(client_.get_client_fd(), RPL_ENDOFNAMES(host_ip, nickname, it->second.get_name_chanel_display()));
+            broadcastMessage(it->second, RPL_ENDOFNAMES(host_ip, nickname, it->second.get_name_chanel_display()), client_.get_client_fd());
+            // send msg to client topic the channel = sujet de channel
+            send_msg_to_clinet(client_.get_client_fd(), RPL_TOPIC(host_ip, nickname, it->second.get_name_chanel_display(),it->second.getTopic()));
+            // send msg to client specifically who set topic (sujet) the channel
+            send_msg_to_clinet(client_.get_client_fd(),RPL_TOPICWHOTIME(host_ip, it->second.get_name_chanel_display(), nickname,it->second.gettopicseter(),client_.get_user(),it->second.gettopictime()));
+
         }
-        print_channel(channels_);
-        vec_cmd.clear();
     }
+    client_.pushChannel(name_channel);
+    print_channel(channels_);
+    // print_name_channel(client_); for display all channel the obj client that join
+    vec_cmd.clear();
 }
 
 
@@ -178,16 +183,18 @@ void serverr::ft_commande_j_m(std::vector<std::string> vec_cmd, size_t &_index_c
     std::cout << "\033[32m commande => \033[0m" << vec_cmd[0] << std::endl;
     if (client_.get_authen() == true)
     {
+        //cmd =  mode invite topic part kick quite ...
         if(to_lower(vec_cmd[0]) == "join")
         {
             if (vec_cmd.size() < 2)
                 send_msg_to_clinet(client_.get_client_fd(), ERR_NEEDMOREPARAMS(client_.get_nickname(), host_ip));
             else
-            {
                 ft_join(vec_cmd, client_, _index_client);
-            }
         }
-        //cmd =  mode invite topic part kick quite ...
+        if (to_lower(vec_cmd[0] == "kick"))
+        {
+            // handler cmd kick
+        }
     }
     else
     {

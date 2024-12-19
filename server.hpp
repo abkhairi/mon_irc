@@ -53,6 +53,8 @@ class serverr
         void handeler_authen_and_commande(std::string cmd_final,size_t &_index_client);
         void ft_commande_j_m(std::vector<std::string> cmd_final, size_t &_index_client, cliente &client_);
         bool is_membre(int fd_client, channels channel_);
+        void    broadcastMessage(channels _channel, std::string _message, int _clientfd);
+
         // commande 
         void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client);
 
