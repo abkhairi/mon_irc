@@ -74,7 +74,9 @@ void setNonBlocking(int fd) ;
 
 void send_msg_to_clinet(int fd_client, std::string mon_msg);
 std::string to_lower(std::string str);
-
-
-
+void print_name_channel(cliente client_);
+std::string get_str_channels(std::vector<std::string> v);
+std::string getListOfNames(std::map<std::pair<bool, int>, cliente> _users);
+void print_info_user(channels  &obj);
+void print_channel(std::map<std::string, channels> channels_);
 #endif

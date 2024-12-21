@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "../server.hpp"
 
 void serverr::topic(std::vector<std::string > vec_cmd,size_t _index_client,cliente client_)
 {
