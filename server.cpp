@@ -4,6 +4,29 @@
 serverr::~serverr()
 {}
 
+channels & serverr::getChannel(std::string channel) 
+{
+    std::map<std::string, channels>::iterator it = channels_.find(to_lower(channel));
+    if (it == channels_.end())
+        throw "No channel found";
+    return it->second;
+}
+
+
+bool   serverr::find_channel(std::string chan)
+{
+    std::map<std::string, channels>::iterator it = channels_.begin();
+    for (it = channels_.begin(); it !=  channels_.end(); it++)
+	{
+            if (to_lower(it->first) == to_lower(chan))
+            {
+                std::cout << "true and name channel is = " << (it->first) << std::endl;
+			    return true;
+            }
+	}
+	return false;
+}
+
 serverr::serverr(int port, std::string pass)
 {
     _port = port;
@@ -158,4 +181,35 @@ void    serverr::display()
 cliente& serverr::get_client_by_index(size_t index)
 {
     return (vec_client[index]);
+}
+
+
+void    serverr::SendToAll(channels channel_, std::string _message)
+{
+    std::map<std::pair<bool, int>, cliente> mapOfClients = channel_.get_map_user();
+    std::map<std::pair<bool, int>, cliente>::iterator iter;
+    for(iter = mapOfClients.begin(); iter != mapOfClients.end(); iter++)
+        send_msg_to_clinet(iter->second.get_client_fd(), _message);
+        // send_msg_to_clinet(iter->first.second, _message);
+}
+
+std::string serverr::get_hostip()
+{
+    return (host_ip);
+}
+
+// std::string  serverr::_time() 
+// {
+//     time_t now = time(0);
+//     char buffer[20];
+//     std::strftime(buffer, sizeof(buffer), "%s", std::localtime(&now));
+//     return std::string(buffer);
+// }
+
+std::string serverr::_time() 
+{
+    time_t now = time(0);
+    char buffer[30];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+    return std::string(buffer) + " (" + std::to_string(now) + ")";
 }

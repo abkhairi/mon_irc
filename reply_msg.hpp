@@ -39,5 +39,19 @@
 
 #define ERR_NOSUCHCHANNEL(hostname, channel, nick) ":" + hostname + " 403 " + nick + " " + channel + " :No such channel\r\n"
 
+
+#define ERR_NOTOP(hostname, channel) ":" + hostname + " 482 " + channel + " " + ":You're not a channel operator\r\n"
+#define ERR_NOSUCHNICK(hostname, channel, argument) ":" + hostname + " 401 " + channel + " " + argument + " :No such nick/channel\r\n"
+
+
+#define RPL_KICK(nick, username, host, kicked, channel, commntaire) ":" + nick + "!" + "~" + username + "@" + host + " KICK " + channel + " " + kicked + " " + commntaire + "\r\n"
+
+#define RPL_NOTOPIC(hostname, nick, chann)   ":" + hostname + " 331 " + nick + " " + chann + " :No topic is set.\r\n"
+#define RPL_TOPICDISPLAY(hostname, nick, channel, topic)                    ":" + hostname + " 332 " + nick + " " + channel + " :" + topic + "\r\n"
+#define RPL_TOPICWHOTIME(client, channel, nick, seter,username, setat)                      ":" + client + " 333 " + nick + " " + channel + " " + seter + "!~@oldschool_irc :" + setat + "\r\n"
+#define ERR_NOTONCHANNEL(client, channel)            "442 " + client + " " + channel + " :You're not on that channel\r\n"
+#define ERR_CHANOPRIVSNEEDED(buffer, channel)                               ":" + buffer + " 482 " + channel + " :You're not channel operator\r\n"
+#define RPL_NEWTOPICSETTED(nick, username, hostname, channel, topic)        ":" + nick + "!~" + username + "@" + hostname + " TOPIC " + channel + " " + topic + "\r\n"
+
 // pourqoui \r\n
 #endif

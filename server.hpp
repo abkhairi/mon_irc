@@ -41,11 +41,13 @@ class serverr
         std::vector<std::string> vec_of_cmd;
         serverr(int port, std::string pass);
         ~serverr();
+        bool    find_channel(std::string chan);
         void    initializer_server(int  port, std::string pass, size_t &i);
         int     get_fd_sock_serv() { return _fd_sock_serv; }
         void    set_fd_sock_serv(int fd) { _fd_sock_serv = fd; }
         cliente& get_client_orgien(int socket_client);
         cliente& get_client_by_index(size_t index);
+        std::string get_hostip();
         void    authenticate_client(std::string cmd,int socket_client, cliente &clienteref, size_t &_index_client);
         void    display();
         void is_registre(cliente &client_, std::string time_);
@@ -54,15 +56,25 @@ class serverr
         void ft_commande_j_m(std::vector<std::string> cmd_final, size_t &_index_client, cliente &client_);
         bool is_membre(int fd_client, channels channel_);
         void    broadcastMessage(channels _channel, std::string _message, int _clientfd);
-
+        channels & getChannel(std::string channel);
+        void    SendToAll(channels channel_, std::string _message);
+        std::string  _time();
         // commande 
         void ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t &_index_client);
+        void kick(std::vector<std::string > vec_cmd,size_t _index_client, cliente client_);
+        void topic(std::vector<std::string > vec_cmd,size_t _index_client,cliente client_);
 
 };
+
+
+
 
 int parsing_port_and_pass(std::string port, std::string pass);
 void setNonBlocking(int fd) ;
 
 void send_msg_to_clinet(int fd_client, std::string mon_msg);
 std::string to_lower(std::string str);
+
+
+
 #endif

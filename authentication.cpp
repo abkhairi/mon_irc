@@ -18,15 +18,19 @@ std::string ft_gethostname()
     char hostname[256]; // Buffer to store the hostname
     if (gethostname(hostname, sizeof(hostname)) != 0)
         std::cerr << "Error retrieving hostname: " << strerror(errno) << std::endl;
-    return (hostname);
+    std::string host_ip = hostname;
+    return (host_ip);
 }
 
 void serverr::handeler_authen_and_commande(std::string cmd_final,size_t &_index_client)
 {
     std::vector<std::string> &vec_of_commande = vec_of_cmd;
-    std::string host_ip = ft_gethostname();
+    // ft_gethostname();
+    char hostname[256]; // Buffer to store the hostname
+    if (gethostname(hostname, sizeof(hostname)) != 0)
+        std::cerr << "Error retrieving hostname: " << strerror(errno) << std::endl;
+    host_ip = hostname;
 
-    // std::cout << "hostname is " << host_ip << std::endl;
     cliente &client_ = get_client_by_index(_index_client - 1);
     std::string nick = client_.get_nickname();
 

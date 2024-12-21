@@ -1,6 +1,8 @@
 #include "server.hpp"
 
 
+
+
 void print_name_channel(cliente client_)
 {
     std::vector<std::string> channels_name = client_.get_chan_name();
@@ -170,11 +172,80 @@ void serverr::ft_join(std::vector<std::string> &vec_cmd,cliente &client_,size_t 
 
         }
     }
+    // here push name the channel in vector client : donc chaque client contient vector qui remplir par name des channels qui join
     client_.pushChannel(name_channel);
     print_channel(channels_);
     // print_name_channel(client_); for display all channel the obj client that join
     vec_cmd.clear();
 }
+
+
+void serverr::kick(std::vector<std::string > vec_cmd, size_t _index_client, cliente client_)
+{
+    std::stringstream users(vec_cmd[2]);
+    std::string user;
+    std::string commntaire;
+
+    // std::string nick = client_.get_nickname();
+    while (std::getline(users,user, ',')) 
+    {
+        if (client_.get_authen() == false)
+        {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NOTREGISTERED(client_.get_nickname(), host_ip));
+            return ;
+        }
+        if (vec_cmd.size() < 3) {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NEEDMOREPARAMS(client_.get_nickname(), host_ip));
+            return ;
+        }
+        channels &obj_chan = getChannel(vec_cmd[1]);
+        std::string str = vec_cmd[1];
+        // commantaire c est a partir de : commaintaire 
+        if (vec_cmd.size() == 3 || (vec_cmd.size() == 4 && vec_cmd[3] == ":"))
+            commntaire = ":Break the Rules";
+        else 
+        {
+            for (size_t i = 3; i < vec_cmd.size(); i++) 
+            {
+                commntaire = commntaire + vec_cmd[i];
+                if (i < vec_cmd.size()) 
+                    commntaire = commntaire + " ";
+            }
+        }
+        if (str[0] == '#' && str.length() > 1)
+            vec_cmd[0] = vec_cmd[0].substr(1);
+        else 
+        {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NOSUCHCHANNEL(host_ip, str, client_.get_nickname()));
+            return ;
+        }
+        if (!(find_channel(vec_cmd[1]))) {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NOSUCHCHANNEL(host_ip, str, client_.get_nickname()));
+            return ;
+        }
+        if (obj_chan.check_if_operator(client_.get_nickname()) == false) 
+        {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NOTOP(host_ip, str));
+            return ;
+        }
+        if (obj_chan.existe_nick(user) == false) {
+            send_msg_to_clinet(client_.get_client_fd(), ERR_NOSUCHNICK(host_ip, str, vec_cmd[2]));
+            return;
+        }
+        // if (check_if_nick_in_chan(vec[1], vec[2]) == false) {
+        // 	sendTo(ERR_USERNOTINCHANNEL(Server::_hostname, vec[1]));
+        // 	return ;
+        // }
+        else 
+        {
+            SendToAll(obj_chan, RPL_KICK(get_client_by_index(_index_client -1).get_nickname(), client_.get_user(), serverr::get_hostip(), user, vec_cmd[1], commntaire));
+            obj_chan.deletClient(user);
+            obj_chan.set_size_users(-1);
+        }
+    }
+}
+
+
 
 
 
@@ -184,22 +255,73 @@ void serverr::ft_commande_j_m(std::vector<std::string> vec_cmd, size_t &_index_c
     if (client_.get_authen() == true)
     {
         //cmd =  mode invite topic part kick quite ...
-        if(to_lower(vec_cmd[0]) == "join")
+        if (to_lower(vec_cmd[0]) == "join")
         {
             if (vec_cmd.size() < 2)
                 send_msg_to_clinet(client_.get_client_fd(), ERR_NEEDMOREPARAMS(client_.get_nickname(), host_ip));
             else
                 ft_join(vec_cmd, client_, _index_client);
         }
-        if (to_lower(vec_cmd[0]) == "kick")
+        else if (to_lower(vec_cmd[0]) == "kick")
         {
-            // handler cmd kick
-            std::cout << "commande kick" << std::endl;
+            kick(vec_cmd, _index_client, client_);
         }
+        else if (to_lower(vec_cmd[0]) == "topic")
+        {
+            topic(vec_cmd, _index_client, client_);
+        }
+
     }
     else
-    {
         send_msg_to_clinet(client_.get_client_fd(), ERR_ALREADYREGISTERED(client_.get_nickname(), host_ip));
-    }
-
 }   
+
+void serverr::topic(std::vector<std::string > vec_cmd,size_t _index_client,cliente client_)
+{
+    if (!client_.get_authen())
+	{
+		send_msg_to_clinet(client_.get_client_fd(), ERR_NOTREGISTERED(client_.get_nickname(), host_ip));
+		return ;
+	}
+	if (vec_cmd.size() < 2)
+	{
+		send_msg_to_clinet(client_.get_client_fd(), ERR_NEEDMOREPARAMS(client_.get_nickname(), host_ip));
+		return;
+	}
+    // check if channel exicte or no
+    if (!find_channel(vec_cmd[1]))
+    {
+            send_msg_to_clinet(client_.get_client_fd(),ERR_NOSUCHCHANNEL(host_ip, vec_cmd[1], client_.get_nickname()));
+            return ;
+    }
+    channels &channel_ = getChannel(vec_cmd[1]);
+    if(vec_cmd.size() == 2) 
+    {
+        if (channel_.get_topic_bool() == false) 
+            send_msg_to_clinet(client_.get_client_fd(),RPL_NOTOPIC(host_ip, client_.get_nickname(),channel_.get_name_chan()));
+        else 
+        {
+            send_msg_to_clinet(client_.get_client_fd(),RPL_TOPICDISPLAY(host_ip, client_.get_nickname(),channel_.get_name_chan(),channel_.getTopic()));
+            send_msg_to_clinet(client_.get_client_fd(),RPL_TOPICWHOTIME(host_ip ,channel_.get_name_chan(), client_.get_nickname(),channel_.gettopicseter(),client_.get_user(),channel_.gettopictime()));
+        }
+    }
+    if (vec_cmd.size() >= 3) 
+    {
+            std::string res; // res c est le sujet de channel
+            for (size_t i = 2; i < vec_cmd.size(); i++) 
+            {
+                res += vec_cmd[i];
+                if (i != vec_cmd.size())
+                    res = res + " ";
+            }
+            std::cout << "|" << res << "|" << std::endl;
+            channel_.setTopicAttr(res, true, client_.get_nickname(), _time());
+            if (channel_.existe_nick(client_.get_nickname()) == false)
+                send_msg_to_clinet(client_.get_client_fd(), ERR_NOTONCHANNEL(host_ip,client_.get_nickname()));
+            else if (channel_.check_if_operator(client_.get_nickname()) == false) 
+                send_msg_to_clinet(client_.get_client_fd(), ERR_CHANOPRIVSNEEDED(host_ip,client_.get_nickname()));
+            else      
+                SendToAll(channel_, RPL_NEWTOPICSETTED(client_.get_nickname(), channel_.gettopicseter(), host_ip, channel_.get_name_chan(),res));
+    }
+}
+

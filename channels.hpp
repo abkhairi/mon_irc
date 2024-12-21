@@ -48,10 +48,14 @@ class channels
         std::string get_name_chanel_display();
         std::map<std::pair<bool,int>, cliente >& get_map_user();
         std::string getTopic();
+        bool        get_topic_bool();
         std::string     gettopicseter();
         std::string     gettopictime();
+        bool    check_if_operator(std::string nickname);
+        bool    existe_nick(std::string user);
         //
         bool	isInvited(int sockfd);
+        void deletClient(std::string nick);
 };
 
 

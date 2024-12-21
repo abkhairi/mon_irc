@@ -13,7 +13,7 @@ OBJ    = $(SRC:.cpp=.o)
 
 all : $(NAME) $(OBJ)
 
-$(NAME) : $(OBJ)
+$(NAME) : $(OBJ) channels.hpp client.hpp reply_msg.hpp server.hpp
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 clean :

@@ -10,6 +10,11 @@ channels::channels(std::string name_channel)
     _usersSize = 0;
 }
 
+bool channels::get_topic_bool()
+{
+    return (_topc);
+}
+
 std::string     channels::gettopicseter() {
     return topicseter;
 }
@@ -125,3 +130,35 @@ void channels::set_flagpass(bool flagpass)
     _flag_pass = flagpass;
 }
 
+bool    channels::check_if_operator(std::string nickname)
+{
+    std::map<std::pair<bool, int>, cliente>::iterator it = _users.begin();
+
+    for(; it != _users.end(); it++) 
+    {
+        if(it->second.get_nickname() == nickname)
+            return it->first.first;
+    }
+    return false;
+}
+
+bool channels::existe_nick(std::string user)
+{
+    std::map<std::pair<bool, int>, cliente>::iterator it = _users.begin();
+    for (it = _users.begin(); it != _users.end(); it++)
+    {
+        if (it->second.get_nickname() == user)
+            return (true);
+    }
+    return (false);
+}
+
+void channels::deletClient(std::string nick)
+ {
+    std::map<std::pair<bool, int>, cliente>::iterator it = _users.begin();
+    for (it = _users.begin(); it != _users.end(); it++) 
+    {
+        if (it->second.get_nickname() == nick)
+            _users.erase(it++);
+    }
+}
